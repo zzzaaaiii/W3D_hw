@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xmas tree</title>
+</head>
+
+<body>
+    <div id='bkgd'  style="position:absolute; top: 10vh; left: 10vw; width:60vw; height: 60vh;">
+        <button id='power'>Power</button>
+        <img src="https://i.imgur.com/lxoGTIg.jpg" style="position:absolute;top:0vw;left:0vw;width:40vw; height:60vh;z-index:-1" />
+        <img src="https://i.imgur.com/Qnxa6x4.png" style="position:absolute;top:23vw;left:20.5vw;width:10vw;z-index:-1" />
+        <img src=" https://i.imgur.com/Fcr5giC.png" style="position:absolute;top:26vw;left:20vw;width:5vw;z-index:-1" />
+        <img src=" https://i.imgur.com/J932Q7s.png" style="position:absolute;top:10vw;left:2vw;width:20vw;z-index:-1" />
+       
+        
+    </div>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script>
+        var powerOn = false;
+
+        $('#power').click(function () {
+            powerOn = !powerOn;
+
+            lamps.forEach(function (item) { item.startBlink(); });
+        });
+
+        function getRandom(min,max){
+            return Math.floor(Math.random()*(max-min+1))+min;
+        };
+
+        class Light {
+
+            constructor(name) {
+                this.name = name + Light.id++;
+                this.myStatus = false;
+
+                let el = document.createElement('div');
+                el.id = this.name;
+                
+                let bkgd = document.getElementById('bkgd');
+                bkgd.appendChild(el);
+                el.setAttribute("style", `position:absolute;width:15px;height:15px;border-radius:20px;z-index:1; background-color: hsl(0, 0%, 50%); `);
+                el.style.left = 50 + '%';
+                el.style.top = 50 + '%';
+            }
+
+
+            toggle() {
+                this.myStatus = !this.myStatus;
+
+                if (powerOn) {
+                    setTimeout(() => { this.toggle(); }, getRandom(1, 2) * 500);// 精簡版getRandom(1, 2) * 500，直接改成500即可
+                }
+                else {
+                    $('#' + this.name).css('backgroundColor', `hsl(0,0%,50%)`);
+                    return ;
+                }
+
+                //console.log(powerOn, this.myStatus);
+
+                if (this.myStatus === true) {
+                    $('#' + this.name).css('backgroundColor', `hsl(${Math.random() * 360},90%,80%)`);
+                } else {
+                    $('#' + this.name).css('backgroundColor', `hsl(${Math.random() * 360},90%,24%)`);
+                }
+            }
+
+            startBlink() {
+                var that = this;
+                setTimeout(() => { this.toggle(); }, 1000);
+            }
+        }
+
+
+        Light.id = 0;
+        lamps = [];
+
+        for (let i = 0; i < 7; i++) {
+            let ll = new Light('light');
+            lamps.push(ll);
+        }
+        $('#light0').css({"top":"7vw","left":"22vw"});
+        $('#light1').css({"top":"9vw","left":"19.5vw"});
+        $('#light2').css({"top":"11vw","left":"17vw"});
+        $('#light3').css({"top":"13vw","left":"19.5vw"});
+        $('#light4').css({"top":"15vw","left":"22vw"});
+        $('#light5').css({"top":"17vw","left":"19.5vw"});
+        $('#light6').css({"top":"19vw","left":"17vw"});
+    </script>
+</body>
+
+</html>
