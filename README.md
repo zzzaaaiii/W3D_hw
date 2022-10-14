@@ -6,4 +6,4 @@
 
  ●✅ [Christmas Tree Blinking, bottom](https://zzzaaaiii.github.io/W3D_hw/HW1_christmasTree.html)
  
- ●⏳ HTML Input & Vector3 API
+ ●✅ [HTML Input & Vector3 API](https://zzzaaaiii.github.io/W3D_hw/HW2_form.html)
