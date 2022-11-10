@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+    #info {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        color: #070707
+      }
+      
+      body {
+        overflow: hidden;
+      }
+      </style>
+</head>
+<body>
+    <div id="info">
+        <button id='switch'>using THIRD</button>
+        <!--<button id='light'>Light On</button>!-->
+        <br>
+        <input type = range min = 30 max = 80 id = 'lighting'>brightness
+    </div>
+    
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+var camera, scene, renderer;
+var spotLight;
+//var id = 1, tmp = 'drawing';
+var use3rd = true, on = true;
+var loader = new THREE.TextureLoader();
+
+class Light{
+
+    constructor(x, y, z, draw) {
+        //tmp = 'drawing';
+        this.light = new THREE.SpotLight(0xffffff, 0.8, 0, Math.PI / 8, 0.974);
+        this.light.position.set(x, y, z);
+        this.light.target = draw;
+        scene.add(this.light);
+
+
+        let lampMap = loader.load("https://i.imgur.com/QcqafjT.jpg");
+        var lampGroup = new THREE.Group();
+        var lamp = new THREE.Mesh (new THREE.CylinderGeometry (10,5,20,20), new THREE.MeshBasicMaterial({map:lampMap, transparent:true}));
+        lamp.rotation.x = Math.PI/2;
+        lamp.position.set (0,0,30);
+        lampGroup.add (lamp);
+        scene.add (lampGroup);
+        lampGroup.position.copy (this.light.position);
+        lampGroup.lookAt (draw.position);
+    }
+
+    turn(n){
+        this.light.intensity = n;
+    }
+}
+
+init();
+animate();
+
+$('#switch').click(function () {
+    use3rd = !use3rd;
+    if (use3rd) $('#switch').text('using THIRD');
+    else $('#switch').text('using ORBIT');
+})
+
+/*$('#light').click(function () {
+    on = !on;
+    //console.log(on);
+    if (on) $('#light').text('Light ON');
+    else $('#light').text('Light OFF');
+    lamps.forEach(function (item) { item.turn(); });
+})*/
+
+$('#lighting').change(function (){
+    lightness = $(this).val() / 100;
+    console.log(lightness);
+    lamps.forEach(function (item) { item.turn(lightness); });
+})
+
+
+function init() {
+
+
+    scene = new THREE.Scene();
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x888888);
+    document.body.appendChild(renderer.domElement);
+
+    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+    camera.position.z = 800;
+    camera.position.y = 1000;
+    let controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    ////////////////////////////////////////////////////////
+
+
+    eyeCamera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000);
+    eyeCamera.position.set(461, 150, 23);
+    eyeCamera.lookAt(294.3, 170, 120);
+
+
+    var gridXZ = new THREE.GridHelper(1500, 30, 'red', 'white');
+    scene.add(gridXZ);
+    
+    var woodTex = loader.load("https://i.imgur.com/3y8yJ5H.jpg");
+    woodTex.repeat.set(1, 1);
+    woodTex.wrapS = THREE.RepeatWrapping;
+
+    var boarder1 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder1.position.set(125, 150, -745);
+    var boarder2 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder2.position.set(-43, 150, -647);
+    boarder2.rotation.y = Math.PI/3;
+    var boarder3 = new THREE.Mesh(new THREE.BoxGeometry(110, 300, 10), new THREE.MeshLambertMaterial());
+    boarder3.position.set(-70, 150, -500);
+    boarder3.rotation.y = -Math.PI/3;
+    var boarder4 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder4.position.set(125, 150, -353);
+    var boarder5 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder5.position.set(292, 150, -647);
+    boarder5.rotation.y = -Math.PI/3;
+    var boarder6 = new THREE.Mesh(new THREE.BoxGeometry(110, 300, 10), new THREE.MeshLambertMaterial());
+    boarder6.position.set(319, 150, -500);
+    boarder6.rotation.y = Math.PI/3;
+    var boarder7 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder7.position.set(-212, 150, -550);
+    var boarder8 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder8.position.set(-380, 150, -452);
+    boarder8.rotation.y = Math.PI/3;
+    var boarder9 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder9.position.set(-380, 150, -257);
+    boarder9.rotation.y = -Math.PI/3;
+    var boarder10 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder10.position.set(-212, 150, -158);
+    var boarder11 = new THREE.Mesh(new THREE.BoxGeometry(110, 300, 10), new THREE.MeshLambertMaterial());
+    boarder11.position.set(-71, 150, -208);
+    boarder11.rotation.y = Math.PI/3;
+    var boarder12 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder12.position.set(461, 150, -550);
+    var boarder13 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder13.position.set(630, 150, -453);
+    boarder13.rotation.y = -Math.PI/3;
+    var boarder14 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder14.position.set(630, 150, -258);
+    boarder14.rotation.y = Math.PI/3;
+    var boarder15 = new THREE.Mesh(new THREE.BoxGeometry(110, 300, 10), new THREE.MeshLambertMaterial());
+    boarder15.position.set(516, 150, -160);
+    var boarder16 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder16.position.set(294.3, 150, -255);
+    boarder16.rotation.y = -Math.PI/3;
+    var boarder17 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder17.position.set(294.3, 150, -60);
+    boarder17.rotation.y = Math.PI/3;
+    var boarder18 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder18.position.set(461, 150, 229);
+    var boarder19 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder19.position.set(630, 150, -63);
+    boarder19.rotation.y = -Math.PI/3;
+    var boarder20 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder20.position.set(630, 150, 132);
+    boarder20.rotation.y = Math.PI/3;
+    var boarder21 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder21.position.set(294.3, 150, 132);
+    boarder21.rotation.y = -Math.PI/3;
+    var boarder22 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder22.position.set(-549, 150, -354);
+    var boarder23 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder23.position.set(-717, 150, -256);
+    boarder23.rotation.y = Math.PI/3;
+    var boarder24 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder24.position.set(-717, 150, -59);
+    boarder24.rotation.y = -Math.PI/3;
+    var boarder25 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder25.position.set(-549, 150, 38);
+    var boarder26 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder26.position.set(-380, 150, 135);
+    boarder26.rotation.y = -Math.PI/3;
+    var boarder27 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder27.position.set(-212, 150, 234);
+    var boarder28 = new THREE.Mesh(new THREE.BoxGeometry(220, 300, 10), new THREE.MeshLambertMaterial());
+    boarder28.position.set(-42.5, 150, 135);
+    boarder28.rotation.y = Math.PI/3;
+    var boarder29 = new THREE.Mesh(new THREE.BoxGeometry(110, 300, 10), new THREE.MeshLambertMaterial());
+    boarder29.position.set(-15.5, 150, -13);
+    boarder29.rotation.y = -Math.PI/3
+    
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(1600, 1500), new THREE.MeshBasicMaterial({map:woodTex}));
+    floor.position.set(0, 2, 0);
+    floor.rotation.x = -Math.PI / 2;
+
+    scene.add(boarder1, boarder2, boarder3, boarder4, boarder5, boarder6, boarder7, boarder8, boarder9, boarder10, boarder11, boarder12, boarder13, boarder14, boarder15, boarder16, boarder17, boarder18, boarder19, boarder20, boarder21, boarder22, boarder23, boarder24, boarder25, boarder26, boarder27, boarder28, boarder29, floor);
+
+    
+    //////////////
+    // frame
+    let frameMap = loader.load("https://i.imgur.com/jG2oSM3.png");
+    var frame = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshBasicMaterial({map:frameMap,transparent:true}));
+    var frame1 = frame.clone();
+    frame1.position.set(125, 170, -739);
+    //frame1.rotation.y = Math.PI;
+    
+    var frame2 = frame.clone();
+    frame2.position.set(-43, 170, -634);
+    frame2.rotation.y = Math.PI/3;
+
+    var frame3 = frame.clone();
+    frame3.position.set(292, 170, -636);
+    frame3.rotation.y = -Math.PI/3;
+    
+    var frame4 = frame.clone();
+    frame4.position.set(-212, 170, -544);
+    
+    var frame5 = frame.clone();
+    frame5.position.set(-380, 170, -441);
+    frame5.rotation.y = Math.PI/3;
+    
+    var frame6 = frame.clone();
+    frame6.position.set(-212, 170, -168);
+    frame6.rotation.y = Math.PI;
+    
+    var frame7 = frame.clone();
+    frame7.position.set(-380, 170, -268);
+    frame7.rotation.y = -4 * Math.PI/3;
+    
+    var frame8 = frame.clone();
+    frame8.position.set(461, 170, -540);
+    
+    var frame9 = frame.clone();
+    frame9.position.set(630, 170, -442);
+    frame9.rotation.y = -Math.PI/3;
+    
+    var frame10 = frame.clone();
+    frame10.position.set(630, 170, -269);
+    frame10.rotation.y = 4 * Math.PI/3;
+    
+    var frame11 = frame.clone();
+    frame11.position.set(-549, 170, -343);
+    
+    var frame12 = frame.clone();
+    frame12.position.set(-717, 170, -245);
+    frame12.rotation.y = Math.PI/3;
+    
+    var frame13 = frame.clone();
+    frame13.position.set(-717, 170, -70);
+    frame13.rotation.y = -4 * Math.PI/3;
+    
+    var frame14 = frame.clone();
+    frame14.position.set(-549, 170, 27);
+    frame14.rotation.y = Math.PI;
+    
+    var frame15 = frame.clone();
+    frame15.position.set(-380, 170, 124);
+    frame15.rotation.y = -4 * Math.PI/3;
+    
+    var frame16 = frame.clone();
+    frame16.position.set(-212, 170, 222);
+    frame16.rotation.y = Math.PI;
+    
+    var frame17 = frame.clone();
+    frame17.position.set(-42.5, 170, 124);
+    frame17.rotation.y = 4 * Math.PI/3;
+    
+    var frame18 = frame.clone();
+    frame18.position.set(-380, 170, -246);
+    frame18.rotation.y = -Math.PI/3;
+    
+    var frame19 = frame.clone();
+    frame19.position.set(-212, 170, -147);
+    
+    var frame20 = frame.clone();
+    frame20.position.set(630, 170, 121);
+    frame20.rotation.y = 4 * Math.PI/3;
+    
+    var frame21 = frame.clone();
+    frame21.position.set(630, 170, -52);
+    frame21.rotation.y = -Math.PI/3;
+    
+    var frame22 = frame.clone();
+    frame22.position.set(461, 170, 218);
+    frame22.rotation.y = Math.PI;
+    
+    var frame23 = frame.clone();
+    frame23.position.set(294.3, 170, 121);
+    frame23.rotation.y = -4 * Math.PI/3;
+    
+    var frame24 = frame.clone();
+    frame24.position.set(294.3, 170, -49);
+    frame24.rotation.y = Math.PI/3;
+    
+    scene.add(frame1,frame2,frame3, frame4, frame5, frame6, frame7, frame8, frame9, frame10, frame11, frame12, frame13, frame14, frame15, frame16, frame17, frame18, frame19, frame20, frame21, frame22, frame23, frame24);
+    
+    //////////////
+    // drawing
+    let DMap1 = loader.load("https://i.imgur.com/rliTRfp.jpg");
+    var drawing1 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap1,transparent:true}));
+    drawing1.position.set(125, 170, -738);
+    
+    let DMap2 = loader.load("https://i.imgur.com/0n788kU.jpg");
+    var drawing2 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap2,transparent:true}));
+    drawing2.position.set(-43, 170, -633);
+    drawing2.rotation.y = Math.PI/3;
+    
+    let DMap3 = loader.load("https://i.imgur.com/3eGTsHl.jpg");
+    var drawing3 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap3,transparent:true}));
+    drawing3.position.set(292, 170, -635);
+    drawing3.rotation.y = -Math.PI/3;
+    
+    let DMap4 = loader.load("https://i.imgur.com/FQllx90.jpg");
+    var drawing4 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap4,transparent:true}));
+    drawing4.position.set(-212, 170, -543);
+    
+    let DMap5 = loader.load("https://i.imgur.com/cyP2890.jpg");
+    var drawing5 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap5,transparent:true}));
+    drawing5.position.set(-380, 170, -440);
+    drawing5.rotation.y = Math.PI/3;
+    
+    let DMap6 = loader.load("https://i.imgur.com/ZjWfh3i.jpg");
+    var drawing6 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap6,transparent:true}));
+    drawing6.position.set(-212, 170, -169);
+    drawing6.rotation.y = Math.PI;
+    
+    let DMap7 = loader.load("https://i.imgur.com/7pot0LK.jpg");
+    var drawing7 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap7,transparent:true}));
+    drawing7.position.set(-380, 170, -269);
+    drawing7.rotation.y = -4 * Math.PI/3;
+    
+    let DMap8 = loader.load("https://i.imgur.com/gSulgMb.jpg");
+    var drawing8 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap8,transparent:true}));
+    drawing8.position.set(461, 170, -539);
+    
+    let DMap9 = loader.load("https://i.imgur.com/zbxuvGe.jpg");
+    var drawing9 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap9,transparent:true}));
+    drawing9.position.set(630, 170, -441);
+    drawing9.rotation.y = -Math.PI/3;
+    
+    let DMap10 = loader.load("https://i.imgur.com/GM2ILPl.jpg");
+    var drawing10 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap10,transparent:true}));
+    drawing10.position.set(630, 170, -270);
+    drawing10.rotation.y = 4 * Math.PI/3;
+    
+    let DMap11 = loader.load("https://i.imgur.com/JwU9G6W.jpg");
+    var drawing11 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap11,transparent:true}));
+    drawing11.position.set(-549, 170, -342);
+    
+    let DMap12 = loader.load("https://i.imgur.com/R62WzV4.jpg");
+    var drawing12 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap12,transparent:true}));
+    drawing12.position.set(-717, 170, -244);
+    drawing12.rotation.y = Math.PI/3;
+    
+    let DMap13 = loader.load("https://i.imgur.com/MdjPNq0.jpg");
+    var drawing13 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap13,transparent:true}));
+    drawing13.position.set(-717, 170, -71);
+    drawing13.rotation.y = -4 * Math.PI/3;
+    
+    let DMap14 = loader.load("https://i.imgur.com/JHkkhuV.jpg");
+    var drawing14 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap14,transparent:true}));
+    drawing14.position.set(-549, 170, 26);
+    drawing14.rotation.y = Math.PI;
+    
+    let DMap15 = loader.load("https://i.imgur.com/4vtJWso.jpg");
+    var drawing15 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap15,transparent:true}));
+    drawing15.position.set(-380, 170, 123);
+    drawing15.rotation.y = -4 * Math.PI/3;
+    
+    let DMap16 = loader.load("https://i.imgur.com/muKdDLq.jpg");
+    var drawing16 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap16,transparent:true}));
+    drawing16.position.set(-212, 170, 221);
+    drawing16.rotation.y = Math.PI;
+    
+    let DMap17 = loader.load("https://i.imgur.com/Wci4QLR.jpg");
+    var drawing17 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap17,transparent:true}));
+    drawing17.position.set(-42.5, 170, 123);
+    drawing17.rotation.y = 4 * Math.PI/3;
+    
+    let DMap18 = loader.load("https://i.imgur.com/EkUzpKg.jpg");
+    var drawing18 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap18,transparent:true}));
+    drawing18.position.set(-380, 170, -245);
+    drawing18.rotation.y = -Math.PI/3;
+    
+    let DMap19 = loader.load("https://i.imgur.com/poZgLgH.jpg");
+    var drawing19 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap19,transparent:true}));
+    drawing19.position.set(-212, 170, -146);
+    
+    let DMap20 = loader.load("https://i.imgur.com/n5Wkzm3.jpg");
+    var drawing20 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap20,transparent:true}));
+    drawing20.position.set(630, 170, 120);
+    drawing20.rotation.y = 4 * Math.PI/3;
+    
+    let DMap21 = loader.load("https://i.imgur.com/Hvyk8Nv.jpg");
+    var drawing21 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap21,transparent:true}));
+    drawing21.position.set(630, 170, -51);
+    drawing21.rotation.y = -Math.PI/3;
+    
+    let DMap22 = loader.load("https://i.imgur.com/CQjREBI.jpg");
+    var drawing22 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap22,transparent:true}));
+    drawing22.position.set(461, 170, 219);
+    drawing22.rotation.y = Math.PI;
+    
+    let DMap23 = loader.load("https://i.imgur.com/PgSYrL4.jpg");
+    var drawing23 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap23,transparent:true}));
+    drawing23.position.set(294.3, 170, 120);
+    drawing23.rotation.y = -4 * Math.PI/3;
+    
+    let DMap24 = loader.load("https://i.imgur.com/7jUEGNt.jpg");
+    var drawing24 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap24,transparent:true}));
+    drawing24.position.set(294.3, 170, -48);
+    drawing24.rotation.y = Math.PI/3;
+    
+    scene.add(drawing1, drawing2, drawing3, drawing4, drawing5, drawing6, drawing7, drawing8, drawing9, drawing10, drawing11, drawing12, drawing13, drawing14, drawing15, drawing16, drawing17, drawing18, drawing19, drawing20, drawing21, drawing22, drawing23, drawing24);
+    
+    //////////////
+    // model
+    let chairMap = loader.load("https://i.imgur.com/dA1tw8L.jpg");
+    var chair = new THREE.Mesh(new THREE.CylinderGeometry( 100, 75, 80, 45), new THREE.MeshBasicMaterial({map:chairMap,transparent:true}));
+    
+    var chair1= chair.clone();
+    chair1.position.set(125, 40, -550);
+    
+    var chair2= chair.clone();
+    chair2.position.set(-212, 40, -345);
+    
+    var chair3= chair.clone();
+    chair3.position.set(-212, 40, 37);
+    
+    var chair4= chair.clone();
+    chair4.position.set(-549, 40, -159);
+    
+    var chair5= chair.clone();
+    chair5.position.set(461, 40, -345);
+    
+    var chair6= chair.clone();
+    chair6.position.set(461, 40, 23);
+        scene.add( chair1, chair2, chair3, chair4, chair5, chair6);
+
+    //////////////
+    // lighting
+    
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    directionalLight.position.set(0, 70, 700);
+        scene.add( directionalLight );
+    const directionalLights = new THREE.DirectionalLight( 0xffffff, 0.5 );
+    directionalLights.position.set(0, 70, -700);
+        scene.add( directionalLights );
+
+    const sphereSize = 3;
+    
+    lamps = [];
+    
+    var light1 = new Light(125, 400, -550, drawing1);
+    var light2 = new Light(125, 400, -550, drawing2);
+    var light3 = new Light(125, 400, -550, drawing3);
+    var light4 = new Light(-212, 400, -345, drawing4);
+    var light5 = new Light(-212, 400, -345, drawing5);
+    var light6 = new Light(-212, 400, -345, drawing6);
+    var light7 = new Light(-212, 400, -345, drawing7);
+    var light8 = new Light(461, 400, -345, drawing8);
+    var light9 = new Light(461, 400, -345, drawing9);
+    var light10 = new Light(461, 400, -345, drawing10);
+    var light11 = new Light(-549, 400, -159, drawing11);
+    var light12 = new Light(-549, 400, -159, drawing12);
+    var light13 = new Light(-549, 400, -159, drawing13);
+    var light14 = new Light(-549, 400, -159, drawing14);
+    var light15 = new Light(-212, 400, 37, drawing15);
+    var light16 = new Light(-212, 400, 37, drawing16);
+    var light17 = new Light(-212, 400, 37, drawing17);
+    var light18 = new Light(-549, 400, -159, drawing18);
+    var light19 = new Light(-212, 400, 37, drawing19);
+    var light20 = new Light(461, 400, 23, drawing20);
+    var light21 = new Light(461, 400, 23, drawing21);
+    var light22 = new Light(461, 400, 23, drawing22);
+    var light23 = new Light(461, 400, 23, drawing23);
+    var light24 = new Light(461, 400, 23, drawing24);
+    lamps.push(light1, light2, light3, light4, light5, light6, light7, light8, light9, light10, light11, light12, light13, light14, light15, light16, light17, light18, light19, light20, light21, light22, light23, light24);
+    //spotLightHelper = new THREE.SpotLightHelper(light11.light);
+    //scene.add(spotLightHelper);
+
+    //////////////
+    // track
+
+    let trackMap = loader.load("https://i.imgur.com/WBMDbAT.jpg");
+    var track1 = new THREE.Mesh (new THREE.CylinderGeometry (10,10,5,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track1.position.set(461, 385, 23);
+
+    var track2 = new THREE.Mesh (new THREE.CylinderGeometry (10,10,5,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track2.position.set(461, 385, -345);
+
+    var track3 = new THREE.Mesh (new THREE.CylinderGeometry (10,10,5,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track3.position.set(125, 385, -550);
+
+    var track4 = new THREE.Mesh (new THREE.CylinderGeometry (10,10,5,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track4.position.set(-212, 385, -345);
+
+    var track5 = new THREE.Mesh (new THREE.CylinderGeometry (10,10,5,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track5.position.set(-212, 385, 37);
+
+    var track6 = new THREE.Mesh (new THREE.CylinderGeometry (10,10,5,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track6.position.set(-549, 385, -159);
+
+    var track7 = new THREE.Mesh (new THREE.CylinderGeometry (3,3,368,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track7.position.set(461, 388, -161);
+    track7.rotation.x = Math.PI / 2;
+
+    var track8 = new THREE.Mesh (new THREE.CylinderGeometry (3,3,388,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track8.position.set(293, 388, -450);
+    track8.rotation.x = Math.PI / 2;
+    track8.rotation.z = -Math.PI / 3.1;
+
+    var track9 = new THREE.Mesh (new THREE.CylinderGeometry (3,3,388,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track9.position.set(-44, 388, -450);
+    track9.rotation.x = Math.PI / 2;
+    track9.rotation.z = Math.PI / 3.1;
+
+    var track10 = new THREE.Mesh (new THREE.CylinderGeometry (3,3,388,20), new THREE.MeshBasicMaterial({map:trackMap, transparent:true}));
+    track10.position.set(-381, 388, -61);
+    track10.rotation.x = Math.PI / 2;
+    track10.rotation.z = -Math.PI / 3;
+
+    scene.add(track1, track2, track3, track4, track5, track6, track7, track8, track9, track10);
+
+}
+
+function animate() {
+
+    requestAnimationFrame(animate);
+    if(!use3rd)
+        renderer.render(scene, camera);
+    else
+        renderer.render(scene, eyeCamera);
+    //spotLightHelper.update();
+
+}
+
+</script>
+</body>
+</html>
