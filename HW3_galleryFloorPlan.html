@@ -27,6 +27,7 @@
         <!--<button id='light'>Light On</button>!-->
         <br>
         <input type = range min = 30 max = 80 id = 'lighting'>brightness
+        <button id='next'>next painting</button>
     </div>
     
 <script src="https://threejs.org/build/three.min.js"></script>
@@ -38,9 +39,10 @@ var spotLight;
 //var id = 1, tmp = 'drawing';
 var use3rd = true, on = true;
 var loader = new THREE.TextureLoader();
+var Pnum = 1;
 
 class Light{
-
+    
     constructor(x, y, z, draw) {
         //tmp = 'drawing';
         this.light = new THREE.SpotLight(0xffffff, 0.8, 0, Math.PI / 8, 0.974);
@@ -84,8 +86,88 @@ $('#switch').click(function () {
 
 $('#lighting').change(function (){
     lightness = $(this).val() / 100;
-    console.log(lightness);
+    //console.log(lightness);
     lamps.forEach(function (item) { item.turn(lightness); });
+})
+
+$('#next').click(function () {
+    if(Pnum == 24)
+        Pnum = 1;
+    else Pnum++;
+
+    if(Pnum == 1){
+        eyeCamera.position.set(461, 150, 23);
+        eyeCamera.lookAt(294.3, 170, 120);
+    }else if(Pnum == 2){
+        eyeCamera.position.set(461, 150, 23);
+        eyeCamera.lookAt(294.3, 170, -48);
+    }else if(Pnum == 3){
+        eyeCamera.position.set(461, 150, 23);
+        eyeCamera.lookAt(461, 170, 219);
+    }else if(Pnum == 4){
+        eyeCamera.position.set(461, 150, 23);
+        eyeCamera.lookAt(630, 170, -51);
+    }else if(Pnum == 5){
+        eyeCamera.position.set(461, 150, 23);
+        eyeCamera.lookAt(630, 170, 120);
+    }else if(Pnum == 6){
+        eyeCamera.position.set(-212, 150, 37);
+        eyeCamera.lookAt(-212, 170, -146);
+    }else if(Pnum == 7){
+        eyeCamera.position.set(-549, 150, -159);
+        eyeCamera.lookAt(-380, 170, -245);
+    }else if(Pnum == 8){
+        eyeCamera.position.set(-212, 150, 37); 
+        eyeCamera.lookAt(-42.5, 170, 123);
+    }else if(Pnum == 9){
+        eyeCamera.position.set(-212, 150, 37);
+        eyeCamera.lookAt(-212, 170, 221);
+    }else if(Pnum == 10){
+        eyeCamera.position.set(-212, 150, 37);
+        eyeCamera.lookAt(-380, 170, 123);
+    }else if(Pnum == 11){
+        eyeCamera.position.set(-549, 150, -159);
+        eyeCamera.lookAt(-549, 170, 26);
+    }else if(Pnum == 12){
+        eyeCamera.position.set(-549, 150, -159);
+        eyeCamera.lookAt(-717, 170, -70);
+    }else if(Pnum == 13){
+        eyeCamera.position.set(-549, 150, -159);
+        eyeCamera.lookAt(-717, 170, -244);
+    }else if(Pnum == 14){
+        eyeCamera.position.set(-549, 150, -159);
+        eyeCamera.lookAt(-549, 170, -343);
+    }else if(Pnum == 15){
+        eyeCamera.position.set(461, 150, -345);
+        eyeCamera.lookAt(630, 170, -269);
+    }else if(Pnum == 16){
+        eyeCamera.position.set(461, 150, -345);
+        eyeCamera.lookAt(630, 170, -441);
+    }else if(Pnum == 17){
+        eyeCamera.position.set(461, 150, -345);
+        eyeCamera.lookAt(461, 170, -539);
+    }else if(Pnum == 18){
+        eyeCamera.position.set(-212, 150, -345);
+        eyeCamera.lookAt(-380, 170, -269);
+    }else if(Pnum == 19){
+        eyeCamera.position.set(-212, 150, -345);
+        eyeCamera.lookAt(-212, 170, -169);
+    }else if(Pnum == 20){
+        eyeCamera.position.set(-212, 150, -345);
+        eyeCamera.lookAt(-380, 170, -440);
+    }else if(Pnum == 21){
+        eyeCamera.position.set(-212, 150, -345);
+        eyeCamera.lookAt(-212, 170, -543);
+    }else if(Pnum == 22){
+        eyeCamera.position.set(125, 150, -550);
+        eyeCamera.lookAt(292, 170, -635);
+    }else if(Pnum == 23){
+        eyeCamera.position.set(125, 150, -550);
+        eyeCamera.lookAt(-43, 170, -633);
+    }else if(Pnum == 24){
+        eyeCamera.position.set(125, 150, -550);
+        eyeCamera.lookAt(125, 170, -738);
+    }
 })
 
 
@@ -107,7 +189,7 @@ function init() {
     ////////////////////////////////////////////////////////
 
 
-    eyeCamera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000);
+    eyeCamera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 1, 1000);
     eyeCamera.position.set(461, 150, 23);
     eyeCamera.lookAt(294.3, 170, 120);
 
