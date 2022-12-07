@@ -317,15 +317,15 @@
                 var intersects = raycaster.intersectObject(plane);
                 if (intersects.length > 0) {
                     if (pt === true && tn === 0) {
-                        var newPuck = pucktable.clone(); //makePuck();
-                        newPuck.unitize.position.copy(intersects[0].point);
-                        newPuck.unitize.position.y = 20;
+                        var newPuck = buildTable(); //makePuck();
+                        newPuck.position.copy(intersects[0].point);
+                        newPuck.position.y = 20;
                         scene.add(newPuck);
                         puckts.push(newPuck);
                         pucks.push(newPuck);
                         tn++;
                     } else if (pc === true) {
-                        chair = new THREE.Object3D();
+                        //chair = new THREE.Object3D();
                         var newPuck = chair; //makePuck();
                         newPuck.position.copy(intersects[0].point);
                         //console.log(intersects[0].point);
