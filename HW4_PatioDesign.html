@@ -120,9 +120,10 @@
                     c.name = 'OBJ';
                     c.position.y = 10;
 
-                    chair = new THREE.Object3D();
-                    chair.add(c);
-
+                    //chair = new THREE.Object3D();
+                    //chair.add(c);
+                    scene.add(c);
+                    return c;
                     //scene.add(car);
 
                 }, onProgress, onError);
@@ -152,9 +153,9 @@
                     c.name = 'OBJ';
                     c.position.y = 7.4;
 
-                    table = new THREE.Object3D();
-                    table.add(c);
-
+                    //table = new THREE.Object3D();
+                    //table.add(c);
+                    return c;
                     //scene.add(car);
 
                 }, onProgress, onError);
@@ -305,13 +306,13 @@
             mouse.y = -((event.clientY - viewportPos.top) / $('#container').innerHeight()) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
-            /*if (pc === true) {
-                puckchair = buildChair();
+            if (pc === true) {
+                puckchair = readChairModel();
                 chaircount++;
             } else if (pt === true) {
                 pucktable = buildTable();
                 tablecount++;
-            }*/
+            }
 
             if (placing === true) { // place
                 var intersects = raycaster.intersectObject(plane);
@@ -326,7 +327,7 @@
                         tn++;
                     } else if (pc === true) {
                         //chair = new THREE.Object3D();
-                        var newPuck = chair; //makePuck();
+                        var newPuck = puckchair; //makePuck();
                         newPuck.position.copy(intersects[0].point);
                         //console.log(intersects[0].point);
                         newPuck.position.y = 10;
