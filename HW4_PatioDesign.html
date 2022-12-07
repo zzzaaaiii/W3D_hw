@@ -86,147 +86,64 @@
         });
 
         var scene, renderer, camera;
-        var plane;
-        var puck;
+        var plane, texture;
+        var puck, prem = 1;
         var mouse = new THREE.Vector2();
         var raycaster = new THREE.Raycaster();
         var placing = true, deleting = false, moving = false;
-        var puckcs = [], puckts = [], thePuck, puckchair, pucktable;
+        var thePuck, puckchair, pucktable;
         var controls, chair, table, chaircount = 0, tablecount = 0, pucks = [];
         var pt = true, pc = false, thePuckt, thePuckc, tn = 0;
 
         init();
         animate();
 
-        function readChairModel(modelName, targetSize = 40) {
-            var onProgress = function (xhr) {
-                if (xhr.lengthComputable) {
-                    var percentComplete = xhr.loaded / xhr.total * 100;
-                    console.log(Math.round(percentComplete, 2) + '%downloaded');
-                }
-            };
-            var onError = function (xhr) { };
-            var mtlLoader = new MTLLoader();
-            mtlLoader.setPath('model/');
-            mtlLoader.load(modelName + '.mtl', function (materials) {
-                materials.preload();
-
-                var objLoader = new OBJLoader();
-                objLoader.setMaterials(materials);
-                objLoader.setPath('model/');
-                objLoader.load(modelName + '.obj', function (object) {
-
-                    var c = unitize(object, targetSize);
-                    c.name = 'OBJ';
-                    c.position.y = 10;
-
-                    //chair = new THREE.Object3D();
-                    //chair.add(c);
-                    scene.add(c);
-                    return c;
-                    //scene.add(car);
-
-                }, onProgress, onError);
-
-            });
-        }
-
-        function readTableModel(targetSize = 40) {
-            var onProgress = function (xhr) {
-                if (xhr.lengthComputable) {
-                    var percentComplete = xhr.loaded / xhr.total * 100;
-                    console.log(Math.round(percentComplete, 2) + '%downloaded');
-                }
-            };
-            var onError = function (xhr) { };
-            var mtlLoader = new MTLLoader();
-            mtlLoader.setPath('model/');
-            mtlLoader.load(modelName + '.mtl', function (materials) {
-                materials.preload();
-
-                var objLoader = new OBJLoader();
-                objLoader.setMaterials(materials);
-                objLoader.setPath('model/');
-                objLoader.load(modelName + '.obj', function (object) {
-
-                    var c = unitize(object, targetSize);
-                    c.name = 'OBJ';
-                    c.position.y = 7.4;
-
-                    //table = new THREE.Object3D();
-                    //table.add(c);
-                    return c;
-                    //scene.add(car);
-
-                }, onProgress, onError);
-
-            });
-        }
-
         $('#save').click(function () {
+            if (prem === 2) tn = 0;
+            var recs = [];
+            for (let i = 0; i < pucks.length; i++) {
+                var rec = {};
+                rec.name = pucks[i].name;
+                rec.x = pucks[i].position.x.toFixed(2);
+                rec.z = pucks[i].position.z.toFixed(2);
+                recs.push(rec);
+            }
 
-            var rects = [];
-            if (puckts.length != 0) {
-                for (let i = 0; i < puckts.length; i++) {
-                    var rec = {};
-                    rec.name = puckts[i].name;
-                    rec.x = puckts[i].position.x.toFixed(2);
-                    rec.z = puckts[i].position.z.toFixed(2);
-                    rects.push(rec);
-                }
-            }
-            var reccs = [];
-            if (puckcs.length != 0) {
-                for (let i = 0; i < puckcs.length; i++) {
-                    var rec = {};
-                    rec.name = puckcs[i].name;
-                    rec.x = puckcs[i].position.x.toFixed(2);
-                    rec.z = puckcs[i].position.z.toFixed(2);
-                    reccs.push(rec);
-                }
-            }
             // puckRecs --> JSON.stringify --> localStorage
-            var recLogt = JSON.stringify(rects);
-            var recLogc = JSON.stringify(reccs);
-            localStorage.setItem('puckLogt', recLogt);
-            localStorage.setItem('puckLogc', recLogc);
+            var recLog = JSON.stringify(recs);
+            localStorage.setItem('puckLog', recLog);
+            prem = 1;
 
         });
 
         $('#clear').click(function () {
 
-            puckcs.forEach(function (puckchair) {
-                puckchair.removeFromParent();
+            pucks.forEach(function (puck) {
+                puck.removeFromParent();
             })
-
-            puckts.forEach(function (pucktable) {
-                pucktable.removeFromParent();
-            })
-
-            puckts = [];
-            puckcs = [];
+            pucks = [];
+            prem = 2;
         });
 
         $('#restore').click(function () {
 
-            var parseLogt = JSON.parse(localStorage.getItem('puckLogt'));
-            if (parseLogt != null) {
-                for (let i = 0; i < parseLogt.length; i++) {
-                    var newPuck = pucktable.clone();
-                    newPuck.position.set(parseLogt[i].x, 20, parseLogt[i].z);
-                    scene.add(newPuck);
-                    puckts.push(newPuck);
-                }
-            }
-            var parseLogc = JSON.parse(localStorage.getItem('puckLogc'));
-            if (parseLogc != null) {
-                for (let i = 0; i < parseLogc.length; i++) {
+            var parseLog = JSON.parse(localStorage.getItem('puckLog'));
+            for (let i = 0; i < parseLog.length; i++) {
+                if (parseLog[i].name === 'chair') {
                     var newPuck = puckchair.clone();
-                    newPuck.position.set(parseLogc[i].x, 10, parseLogc[i].z);
-                    scene.add(newPuck);
-                    puckcs.push(newPuck);
+                    parseLog[i].y = 10;
+                } else if (parseLog[i].name === 'table') {
+                    console.log(parseLog[i].name);
+                    var newPuck = pucktable.clone();
+                    parseLog[i].y = 0;
                 }
+                newPuck.name = parseLog[i].name;
+                newPuck.position.set(parseLog[i].x, parseLog[i].y, parseLog[i].z);
+                //console.log(newPuck.position);
+                scene.add(newPuck);
+                pucks.push(newPuck);
             }
+            prem = 3;
         });
 
         function init() {
@@ -256,18 +173,15 @@
             var gridXZ = new THREE.GridHelper(200, 20, 'red', 'white');
             scene.add(gridXZ);
 
+            let loader = new THREE.TextureLoader();
+            loader.crossOrigin = '';
+            texture = loader.load('https://i.imgur.com/oHkXwQ3.jpg');
+
             // build an invisible plane, overlapping the grid
-            plane = new THREE.Mesh(
-                new THREE.PlaneGeometry(200, 200, 8, 8),
-                new THREE.MeshBasicMaterial({
-                    color: 0xff0000,
-                    opacity: 0.25,
-                    transparent: true
-                }));
+            plane = bulidfloor();
             plane.rotation.x = -Math.PI / 2;
-            plane.material.visible = true; // invisible, for picking only
             scene.add(plane);
-            readChairModel('chair');
+            // readChairModel('chair');
 
             window.addEventListener('resize', onWindowResize, false);
             $('#container').on("pointerdown", onMouseDown);
@@ -275,6 +189,36 @@
             $('#container').on("pointerup", onMouseUp);
 
             thePuck = null;
+        }
+
+        function bulidfloor() {
+            var loader = new THREE.TextureLoader();
+            var floorGroup = new THREE.Group();
+            var grassMap = loader.load('https://i.imgur.com/5om5A9y.jpg');
+            var grassAlpha = loader.load('https://i.imgur.com/qxMu1jO.png');
+            var grassFloor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({
+                map: grassMap,
+                transparent: true,
+                alphaMap: grassAlpha
+            }));
+
+            var stoneMap = loader.load('https://i.imgur.com/oeHk2QH.jpg');
+            var stoneAlpha = loader.load('https://i.imgur.com/iEQpOPk.png');
+            var stoneFloor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({
+                map: stoneMap,
+                transparent: true,
+                alphaMap: stoneAlpha
+            }));
+
+            var roadMap = loader.load('https://i.imgur.com/3vtkLwI.jpg');
+            var roadAlpha = loader.load('https://i.imgur.com/561kHJw.png');
+            var roadFloor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({
+                map: roadMap,
+                transparent: true,
+                alphaMap: roadAlpha
+            }));
+            floorGroup.add(grassFloor, stoneFloor, roadFloor);
+            return floorGroup;
         }
 
         function onWindowResize() {
@@ -286,17 +230,118 @@
         }
 
         function buildChair() {
-            readChairModel('chair');
-            chair = new THREE.Object3D();
+            const geometry = new THREE.CylinderGeometry(8, 10, 20, 48);
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+            chair = new THREE.Mesh(geometry, material);
+            //scene.add(cylinder);
             //chair.position.y = 10;
             return chair;
         }
 
         function buildTable() {
-            var cyl_geom = new THREE.CylinderGeometry(10, 10, 60, 32);
-            var cyl_mat = new THREE.MeshNormalMaterial();
-            table = new THREE.Mesh(cyl_geom, cyl_mat);
-            return table;
+            var plane = new THREE.Object3D();
+
+            let points = [];
+            points.push(new THREE.Vector3(20, 0, -15),
+                new THREE.Vector3(18, 0, -13),
+                new THREE.Vector3(18, 0, -15),
+                new THREE.Vector3(20, 0, -13),
+                new THREE.Vector3(20, 30, -15),
+                new THREE.Vector3(20, 30, -13),
+                new THREE.Vector3(18, 30, -15),
+                new THREE.Vector3(18, 30, -13),
+
+                new THREE.Vector3(20, 0, 15),
+                new THREE.Vector3(18, 0, 13),
+                new THREE.Vector3(18, 0, 15),
+                new THREE.Vector3(20, 0, 13),
+                new THREE.Vector3(20, 30, 15),
+                new THREE.Vector3(20, 30, 13),
+                new THREE.Vector3(18, 30, 15),
+                new THREE.Vector3(18, 30, 13),
+
+                new THREE.Vector3(-20, 0, -15),
+                new THREE.Vector3(-18, 0, -13),
+                new THREE.Vector3(-18, 0, -15),
+                new THREE.Vector3(-20, 0, -13),
+                new THREE.Vector3(-20, 30, -15),
+                new THREE.Vector3(-20, 30, -13),
+                new THREE.Vector3(-18, 30, -15),
+                new THREE.Vector3(-18, 30, -13),
+
+                new THREE.Vector3(-20, 0, 15),
+                new THREE.Vector3(-18, 0, 13),
+                new THREE.Vector3(-18, 0, 15),
+                new THREE.Vector3(-20, 0, 13),
+                new THREE.Vector3(-20, 30, 15),
+                new THREE.Vector3(-20, 30, 13),
+                new THREE.Vector3(-18, 30, 15),
+                new THREE.Vector3(-18, 30, 13),
+
+                new THREE.Vector3(-30, 30, -22),
+                new THREE.Vector3(30, 30, 22),
+                new THREE.Vector3(30, 30, -22),
+                new THREE.Vector3(-30, 30, 22),
+                new THREE.Vector3(-30, 35, -22),
+                new THREE.Vector3(-30, 35, 22),
+                new THREE.Vector3(30, 35, -22),
+                new THREE.Vector3(30, 35, 22),
+            );
+            var geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+            let indices = [];
+            indices.push(3, 0, 4);
+            indices.push(3, 4, 5);
+            indices.push(0, 6, 4);
+            indices.push(0, 2, 6);
+            indices.push(2, 7, 6);
+            indices.push(2, 1, 7);
+            indices.push(7, 1, 3);
+            indices.push(3, 5, 7);
+            indices.push(8, 12, 10);
+            indices.push(10, 12, 14);
+            indices.push(8, 13, 12);
+            indices.push(8, 11, 13);
+            indices.push(11, 15, 13);
+            indices.push(11, 9, 15);
+            indices.push(9, 14, 15);
+            indices.push(9, 10, 14);
+            indices.push(16, 20, 22);
+            indices.push(16, 22, 18);
+            indices.push(18, 22, 17);
+            indices.push(17, 22, 23);
+            indices.push(17, 23, 21);
+            indices.push(17, 21, 19);
+            indices.push(19, 21, 20);
+            indices.push(19, 20, 16);
+            indices.push(24, 28, 30);
+            indices.push(24, 30, 26);
+            indices.push(26, 30, 25);
+            indices.push(25, 30, 31);
+            indices.push(25, 31, 29);
+            indices.push(25, 29, 27);
+            indices.push(27, 29, 28);
+            indices.push(27, 28, 24);
+            indices.push(32, 36, 38);
+            indices.push(32, 38, 34);
+            indices.push(34, 38, 33);
+            indices.push(33, 38, 39);
+            indices.push(33, 39, 37);
+            indices.push(33, 37, 35);
+            indices.push(35, 37, 36);
+            indices.push(35, 36, 32);
+            indices.push(34, 33, 32);
+            indices.push(33, 35, 32);
+            indices.push(36, 37, 38);
+            indices.push(38, 37, 39);
+            geometry.setIndex(indices);
+
+            geometry.computeBoundingSphere();
+            geometry.computeVertexNormals();
+
+            let mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ map: texture }));
+            mesh.material.polygonOffset = false;
+            return mesh;
         }
 
         function onMouseDown(event) {
@@ -306,73 +351,46 @@
             mouse.y = -((event.clientY - viewportPos.top) / $('#container').innerHeight()) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
-            if (pc === true) {
-                puckchair = readChairModel();
-                chaircount++;
-            } else if (pt === true) {
-                pucktable = buildTable();
-                tablecount++;
-            }
+            puckchair = buildChair();
+            pucktable = buildTable();
 
             if (placing === true) { // place
                 var intersects = raycaster.intersectObject(plane);
                 if (intersects.length > 0) {
                     if (pt === true && tn === 0) {
-                        var newPuck = buildTable(); //makePuck();
+                        var newPuck = pucktable; //makePuck();
                         newPuck.position.copy(intersects[0].point);
-                        newPuck.position.y = 20;
+                        newPuck.name = 'table';
                         scene.add(newPuck);
-                        puckts.push(newPuck);
                         pucks.push(newPuck);
                         tn++;
                     } else if (pc === true) {
-                        //chair = new THREE.Object3D();
                         var newPuck = puckchair; //makePuck();
                         newPuck.position.copy(intersects[0].point);
-                        //console.log(intersects[0].point);
+                        newPuck.name = 'chair';
                         newPuck.position.y = 10;
                         scene.add(newPuck);
-                        puckcs.push(newPuck);
                         pucks.push(newPuck);
                     }
                 }
             } else if (deleting === true) {
-                var intersectst = raycaster.intersectObjects(puckts); //table
-                var intersectsc = raycaster.intersectObjects(puckcs); //chair
-                console.log(intersectst);
-                console.log(intersectsc);
-                if (pt === true) {
-                    thePuckt = intersectst[0].object;
-                    thePuckt.removeFromParent();
+                var intersects = raycaster.intersectObjects(pucks);
+                if (intersects.length > 0) {
+                    thePuck = intersects[0].object;
 
-                    // remove thePuck from puckts
-                    for (let i = 0; i < puckts.length; i++) {
-                        if (puckts[i] === thePuckt) {
-                            puckts.splice(i, 1);
-                        }
-                        if (pucks[i] === thePuckt) {
-                            pucks.splice(i, 1);
-                            break;
-                        }
-                    }
-                    tn--;
-                }
-                if (pc === true) {
-                    thePuckc = intersectsc[0].object;
-                    thePuckc.removeFromParent();
+                    //scene.remove(thePuck);
+                    if (thePuck.name === 'table') tn--;
+                    else if (thePuck.name === 'chair') chaircount--;
+                    thePuck.removeFromParent();
 
-                    // remove thePuck from puckcs
-                    for (let i = 0; i < puckcs.length; i++) {
-                        if (puckcs[i] === thePuckc) {
-                            puckcs.splice(i, 1);
-                        }
-                        if (pucks[i] === thePuckc) {
+                    // remove thePuck from pucks
+                    for (let i = 0; i < pucks.length; i++) {
+                        if (pucks[i] === thePuck) {
                             pucks.splice(i, 1);
                             break;
                         }
                     }
                 }
-
             } else if (moving === true) {
                 var intersects = raycaster.intersectObjects(pucks);
                 if (intersects.length > 0) {
@@ -390,7 +408,7 @@
                 controls.enabled = true;
             }
 
-            if (puckcs.length === 0 && puckts === 0) {
+            if (pucks.length === 0) {
                 placing = true;
                 deleting = false;
                 moving = false;
@@ -410,10 +428,10 @@
 
             raycaster.setFromCamera(mouse, camera);
             var intersects = raycaster.intersectObject(plane);
-            if (intersects.length > 0) {
+            if (intersects.length > 0 && moving === true) {
                 controls.enabled = false; // to disable camera movement
-
                 thePuck.position.copy(intersects[0].point);
+                if (thePuck.name === 'chair') thePuck.position.y = 10;
             }
 
         }
