@@ -285,9 +285,9 @@
 
         function buildChair() {
             readChairModel('chair');
-            chair = new THREE.Object3D();
+            //chair = new THREE.Object3D();
             chair.position.y = 15;
-            return chair;
+            return chair.clone();
         }
 
         function buildTable() {
