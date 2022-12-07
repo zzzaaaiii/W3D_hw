@@ -286,6 +286,7 @@
         function buildChair() {
             readChairModel('chair');
             //chair = new THREE.Object3D();
+            chair.object.position.y = 10;
             return chair;
         }
 
@@ -323,9 +324,9 @@
                         pucks.push(newPuck);
                         tn++;
                     } else if (pc === true) {
-                        var newPuck = puckchair.clone(); //makePuck();
+                        var newPuck = puckchair; //makePuck();
                         newPuck.position.copy(intersects[0].point);
-                        newPuck.position.y = 10;
+                        //newPuck.position.y = 10;
                         scene.add(newPuck);
                         puckcs.push(newPuck);
                         pucks.push(newPuck);
