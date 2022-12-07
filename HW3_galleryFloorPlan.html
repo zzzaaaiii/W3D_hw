@@ -27,7 +27,33 @@
         <!--<button id='light'>Light On</button>!-->
         <br>
         <input type = range min = 30 max = 80 id = 'lighting'>brightness
-        <button id='next'>next painting</button>
+        <br>
+        <select id='method'>
+            <option value='sol1-1'>micomet_train</option>
+            <option value='sol1-2'>micomet_sing</option>
+            <option value='sol1-3'>micomet_stage</option>
+            <option value='sol1-4'>micomet_firework</option>
+            <option value='sol1-5'>micomet_tetris</option>
+            <option value='sol2-1'>The Crucifixion of St Peter</option>
+            <option value='sol2-2'>The Entombment</option>
+            <option value='sol2-3'>The prophet Zacharias</option>
+            <option value='sol3-1'>Drunkenness of Noah</option>
+            <option value='sol3-2'>Prophet Daniel</option>
+            <option value='sol3-3'>Ignudo</option>
+            <option value='sol4-1'>Ezekiel</option>
+            <option value='sol4-2'>The Last Judgment</option>
+            <option value='sol4-3'>The Delphic Sibyl</option>
+            <option value='sol4-4'>The Torment of Saint Anthony</option>
+            <option value='sol5-1'>Creation of Adam</option>
+            <option value='sol5-2'>The Manchester Madonna</option>
+            <option value='sol5-3'>The Flood</option>
+            <option value='sol5-4'>The Libyan Sibyl</option>
+            <option value='sol6-1'>The Persian Sybelle</option>
+            <option value='sol6-2'>The Fall and The Expulsion from Paradise</option>
+            <option value='sol6-3'>Ignudo</option>
+            <option value='sol6-4'>Jonah</option>
+            <option value='sol6-5'>Joel</option>
+          </select>
     </div>
     
 <script src="https://threejs.org/build/three.min.js"></script>
@@ -37,9 +63,18 @@
 var camera, scene, renderer;
 var spotLight;
 //var id = 1, tmp = 'drawing';
-var use3rd = true, on = true;
+var use3rd = false, on = true;
 var loader = new THREE.TextureLoader();
-var Pnum = 1;
+var strategy = 1, current = 1, targetL, did = 1, targetP = 24, alpha = 0, change = false, equal = false;
+var gate1;
+var gate2;
+var gate3;
+var gate4;
+var gate5;
+var gate6;
+var stopL;
+var drawing1, drawing2, drawing3, drawing4, drawing5, drawing6, drawing7, drawing8, drawing9, drawing10, drawing11, drawing12, drawing13, drawing14, drawing15, drawing16, drawing17, drawing18, drawing19, drawing20, drawing21, drawing22, drawing23, drawing24;
+var chair1Clone, chair2Clone, chair3Clone, chair4Clone, chair5Clone, chair6Clone;
 
 class Light{
     
@@ -90,85 +125,84 @@ $('#lighting').change(function (){
     lamps.forEach(function (item) { item.turn(lightness); });
 })
 
-$('#next').click(function () {
-    if(Pnum == 24)
-        Pnum = 1;
-    else Pnum++;
-
-    if(Pnum == 1){
-        eyeCamera.position.set(461, 150, 23);
-        eyeCamera.lookAt(294.3, 170, 120);
-    }else if(Pnum == 2){
-        eyeCamera.position.set(461, 150, 23);
-        eyeCamera.lookAt(294.3, 170, -48);
-    }else if(Pnum == 3){
-        eyeCamera.position.set(461, 150, 23);
-        eyeCamera.lookAt(461, 170, 219);
-    }else if(Pnum == 4){
-        eyeCamera.position.set(461, 150, 23);
-        eyeCamera.lookAt(630, 170, -51);
-    }else if(Pnum == 5){
-        eyeCamera.position.set(461, 150, 23);
-        eyeCamera.lookAt(630, 170, 120);
-    }else if(Pnum == 6){
-        eyeCamera.position.set(-212, 150, 37);
-        eyeCamera.lookAt(-212, 170, -146);
-    }else if(Pnum == 7){
-        eyeCamera.position.set(-549, 150, -159);
-        eyeCamera.lookAt(-380, 170, -245);
-    }else if(Pnum == 8){
-        eyeCamera.position.set(-212, 150, 37); 
-        eyeCamera.lookAt(-42.5, 170, 123);
-    }else if(Pnum == 9){
-        eyeCamera.position.set(-212, 150, 37);
-        eyeCamera.lookAt(-212, 170, 221);
-    }else if(Pnum == 10){
-        eyeCamera.position.set(-212, 150, 37);
-        eyeCamera.lookAt(-380, 170, 123);
-    }else if(Pnum == 11){
-        eyeCamera.position.set(-549, 150, -159);
-        eyeCamera.lookAt(-549, 170, 26);
-    }else if(Pnum == 12){
-        eyeCamera.position.set(-549, 150, -159);
-        eyeCamera.lookAt(-717, 170, -70);
-    }else if(Pnum == 13){
-        eyeCamera.position.set(-549, 150, -159);
-        eyeCamera.lookAt(-717, 170, -244);
-    }else if(Pnum == 14){
-        eyeCamera.position.set(-549, 150, -159);
-        eyeCamera.lookAt(-549, 170, -343);
-    }else if(Pnum == 15){
-        eyeCamera.position.set(461, 150, -345);
-        eyeCamera.lookAt(630, 170, -269);
-    }else if(Pnum == 16){
-        eyeCamera.position.set(461, 150, -345);
-        eyeCamera.lookAt(630, 170, -441);
-    }else if(Pnum == 17){
-        eyeCamera.position.set(461, 150, -345);
-        eyeCamera.lookAt(461, 170, -539);
-    }else if(Pnum == 18){
-        eyeCamera.position.set(-212, 150, -345);
-        eyeCamera.lookAt(-380, 170, -269);
-    }else if(Pnum == 19){
-        eyeCamera.position.set(-212, 150, -345);
-        eyeCamera.lookAt(-212, 170, -169);
-    }else if(Pnum == 20){
-        eyeCamera.position.set(-212, 150, -345);
-        eyeCamera.lookAt(-380, 170, -440);
-    }else if(Pnum == 21){
-        eyeCamera.position.set(-212, 150, -345);
-        eyeCamera.lookAt(-212, 170, -543);
-    }else if(Pnum == 22){
-        eyeCamera.position.set(125, 150, -550);
-        eyeCamera.lookAt(292, 170, -635);
-    }else if(Pnum == 23){
-        eyeCamera.position.set(125, 150, -550);
-        eyeCamera.lookAt(-43, 170, -633);
-    }else if(Pnum == 24){
-        eyeCamera.position.set(125, 150, -550);
-        eyeCamera.lookAt(125, 170, -738);
+$("#method").change(function() {
+    if($('#method option:selected').val() === 'sol1-1'){
+        strategy = 1;
+        targetP = 24;
+    }else if($('#method option:selected').val() === 'sol1-2'){
+        strategy = 1;
+        targetP = 23;
+    }else if($('#method option:selected').val() === 'sol1-3'){
+        strategy = 1;
+        targetP = 22;
+    }else if($('#method option:selected').val() === 'sol1-4'){
+        strategy = 1;
+        targetP = 20;
+    }else if($('#method option:selected').val() === 'sol1-5'){
+        strategy = 1;
+        targetP = 21;
+    }else if($('#method option:selected').val() === 'sol2-1'){
+        strategy = 2;
+        targetP = 10;
+    }else if($('#method option:selected').val() === 'sol2-2'){
+        strategy = 2;
+        targetP = 9;
+    }else if($('#method option:selected').val() === 'sol2-3'){
+        strategy = 2;
+        targetP = 8;
+    }else if($('#method option:selected').val() === 'sol3-1'){
+        strategy = 3;
+        targetP = 3;
+    }else if($('#method option:selected').val() === 'sol3-2'){
+        strategy = 3;
+        targetP = 1;
+    }else if($('#method option:selected').val() === 'sol3-3'){
+        strategy = 3;
+        targetP = 2;
+    }else if($('#method option:selected').val() === 'sol4-1'){
+        strategy = 4;
+        targetP = 4;
+    }else if($('#method option:selected').val() === 'sol4-2'){
+        strategy = 4;
+        targetP = 5;
+    }else if($('#method option:selected').val() === 'sol4-3'){
+        strategy = 4;
+        targetP = 7;
+    }else if($('#method option:selected').val() === 'sol4-4'){
+        strategy = 4;
+        targetP = 6;
+    }else if($('#method option:selected').val() === 'sol5-1'){
+        strategy = 5;
+        targetP = 19;
+    }else if($('#method option:selected').val() === 'sol5-2'){
+        strategy = 5;
+        targetP = 17;
+    }else if($('#method option:selected').val() === 'sol5-3'){
+        strategy = 5;
+        targetP = 16;
+    }else if($('#method option:selected').val() === 'sol5-4'){
+        strategy = 5;
+        targetP = 15;
+    }else if($('#method option:selected').val() === 'sol6-1'){
+        strategy = 6;
+        targetP = 18;
+    }else if($('#method option:selected').val() === 'sol6-2'){
+        strategy = 6;
+        targetP = 11;
+    }else if($('#method option:selected').val() === 'sol6-3'){
+        strategy = 6;
+        targetP = 12;
+    }else if($('#method option:selected').val() === 'sol6-4'){
+        strategy = 6;
+        targetP = 13;
+    }else if($('#method option:selected').val() === 'sol6-5'){
+        strategy = 6;
+        targetP = 14;
     }
-})
+    
+    use3rd = true;
+    $('#switch').text('using THIRD');
+});
 
 
 function init() {
@@ -188,11 +222,9 @@ function init() {
 
     ////////////////////////////////////////////////////////
 
-
-    eyeCamera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 1, 1000);
-    eyeCamera.position.set(461, 150, 23);
-    eyeCamera.lookAt(294.3, 170, 120);
-
+    eyeCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+    eyeCamera.position.set(461, 170, 23);
+    eyeCamera.lookAt(294.3, 170, -48);
 
     var gridXZ = new THREE.GridHelper(1500, 30, 'red', 'white');
     scene.add(gridXZ);
@@ -387,117 +419,117 @@ function init() {
     //////////////
     // drawing
     let DMap1 = loader.load("https://i.imgur.com/rliTRfp.jpg");
-    var drawing1 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap1,transparent:true}));
+    drawing1 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap1,transparent:true}));
     drawing1.position.set(125, 170, -738);
     
     let DMap2 = loader.load("https://i.imgur.com/0n788kU.jpg");
-    var drawing2 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap2,transparent:true}));
+    drawing2 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap2,transparent:true}));
     drawing2.position.set(-43, 170, -633);
     drawing2.rotation.y = Math.PI/3;
     
     let DMap3 = loader.load("https://i.imgur.com/3eGTsHl.jpg");
-    var drawing3 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap3,transparent:true}));
+    drawing3 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap3,transparent:true}));
     drawing3.position.set(292, 170, -635);
     drawing3.rotation.y = -Math.PI/3;
     
     let DMap4 = loader.load("https://i.imgur.com/FQllx90.jpg");
-    var drawing4 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap4,transparent:true}));
+    drawing4 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap4,transparent:true}));
     drawing4.position.set(-212, 170, -543);
     
     let DMap5 = loader.load("https://i.imgur.com/cyP2890.jpg");
-    var drawing5 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap5,transparent:true}));
+    drawing5 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap5,transparent:true}));
     drawing5.position.set(-380, 170, -440);
     drawing5.rotation.y = Math.PI/3;
     
     let DMap6 = loader.load("https://i.imgur.com/ZjWfh3i.jpg");
-    var drawing6 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap6,transparent:true}));
+    drawing6 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap6,transparent:true}));
     drawing6.position.set(-212, 170, -169);
     drawing6.rotation.y = Math.PI;
     
     let DMap7 = loader.load("https://i.imgur.com/7pot0LK.jpg");
-    var drawing7 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap7,transparent:true}));
+    drawing7 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap7,transparent:true}));
     drawing7.position.set(-380, 170, -269);
     drawing7.rotation.y = -4 * Math.PI/3;
     
     let DMap8 = loader.load("https://i.imgur.com/gSulgMb.jpg");
-    var drawing8 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap8,transparent:true}));
+    drawing8 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap8,transparent:true}));
     drawing8.position.set(461, 170, -539);
     
     let DMap9 = loader.load("https://i.imgur.com/zbxuvGe.jpg");
-    var drawing9 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap9,transparent:true}));
+    drawing9 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap9,transparent:true}));
     drawing9.position.set(630, 170, -441);
     drawing9.rotation.y = -Math.PI/3;
     
     let DMap10 = loader.load("https://i.imgur.com/GM2ILPl.jpg");
-    var drawing10 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap10,transparent:true}));
+    drawing10 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap10,transparent:true}));
     drawing10.position.set(630, 170, -270);
     drawing10.rotation.y = 4 * Math.PI/3;
     
     let DMap11 = loader.load("https://i.imgur.com/JwU9G6W.jpg");
-    var drawing11 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap11,transparent:true}));
+    drawing11 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap11,transparent:true}));
     drawing11.position.set(-549, 170, -342);
     
     let DMap12 = loader.load("https://i.imgur.com/R62WzV4.jpg");
-    var drawing12 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap12,transparent:true}));
+    drawing12 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap12,transparent:true}));
     drawing12.position.set(-717, 170, -244);
     drawing12.rotation.y = Math.PI/3;
     
     let DMap13 = loader.load("https://i.imgur.com/MdjPNq0.jpg");
-    var drawing13 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap13,transparent:true}));
+    drawing13 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap13,transparent:true}));
     drawing13.position.set(-717, 170, -71);
     drawing13.rotation.y = -4 * Math.PI/3;
     
     let DMap14 = loader.load("https://i.imgur.com/JHkkhuV.jpg");
-    var drawing14 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap14,transparent:true}));
+    drawing14 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap14,transparent:true}));
     drawing14.position.set(-549, 170, 26);
     drawing14.rotation.y = Math.PI;
     
     let DMap15 = loader.load("https://i.imgur.com/4vtJWso.jpg");
-    var drawing15 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap15,transparent:true}));
+    drawing15 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap15,transparent:true}));
     drawing15.position.set(-380, 170, 123);
     drawing15.rotation.y = -4 * Math.PI/3;
     
     let DMap16 = loader.load("https://i.imgur.com/muKdDLq.jpg");
-    var drawing16 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap16,transparent:true}));
+    drawing16 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap16,transparent:true}));
     drawing16.position.set(-212, 170, 221);
     drawing16.rotation.y = Math.PI;
     
     let DMap17 = loader.load("https://i.imgur.com/Wci4QLR.jpg");
-    var drawing17 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap17,transparent:true}));
+    drawing17 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap17,transparent:true}));
     drawing17.position.set(-42.5, 170, 123);
     drawing17.rotation.y = 4 * Math.PI/3;
     
     let DMap18 = loader.load("https://i.imgur.com/EkUzpKg.jpg");
-    var drawing18 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap18,transparent:true}));
+    drawing18 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap18,transparent:true}));
     drawing18.position.set(-380, 170, -245);
     drawing18.rotation.y = -Math.PI/3;
     
     let DMap19 = loader.load("https://i.imgur.com/poZgLgH.jpg");
-    var drawing19 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap19,transparent:true}));
+    drawing19 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap19,transparent:true}));
     drawing19.position.set(-212, 170, -146);
     
     let DMap20 = loader.load("https://i.imgur.com/n5Wkzm3.jpg");
-    var drawing20 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap20,transparent:true}));
+    drawing20 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap20,transparent:true}));
     drawing20.position.set(630, 170, 120);
     drawing20.rotation.y = 4 * Math.PI/3;
     
     let DMap21 = loader.load("https://i.imgur.com/Hvyk8Nv.jpg");
-    var drawing21 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap21,transparent:true}));
+    drawing21 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap21,transparent:true}));
     drawing21.position.set(630, 170, -51);
     drawing21.rotation.y = -Math.PI/3;
     
     let DMap22 = loader.load("https://i.imgur.com/CQjREBI.jpg");
-    var drawing22 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap22,transparent:true}));
+    drawing22 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap22,transparent:true}));
     drawing22.position.set(461, 170, 219);
     drawing22.rotation.y = Math.PI;
     
     let DMap23 = loader.load("https://i.imgur.com/PgSYrL4.jpg");
-    var drawing23 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap23,transparent:true}));
+    drawing23 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap23,transparent:true}));
     drawing23.position.set(294.3, 170, 120);
     drawing23.rotation.y = -4 * Math.PI/3;
     
     let DMap24 = loader.load("https://i.imgur.com/7jUEGNt.jpg");
-    var drawing24 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap24,transparent:true}));
+    drawing24 = new THREE.Mesh(new THREE.PlaneGeometry(75, 75), new THREE.MeshBasicMaterial({map:DMap24,transparent:true}));
     drawing24.position.set(294.3, 170, -48);
     drawing24.rotation.y = Math.PI/3;
     
@@ -510,22 +542,35 @@ function init() {
     
     var chair1= chair.clone();
     chair1.position.set(125, 40, -550);
+    chair1Clone = chair1.clone();
+    chair1Clone.position.y = 170;
     
     var chair2= chair.clone();
     chair2.position.set(-212, 40, -345);
+    chair2Clone = chair2.clone();
+    chair2Clone.position.y = 170;
     
     var chair3= chair.clone();
     chair3.position.set(-212, 40, 37);
+    chair3Clone = chair3.clone();
+    chair3Clone.position.y = 170;
     
     var chair4= chair.clone();
     chair4.position.set(-549, 40, -159);
+    chair4Clone = chair4.clone();
+    chair4Clone.position.y = 170;
     
     var chair5= chair.clone();
     chair5.position.set(461, 40, -345);
+    chair5Clone = chair5.clone();
+    chair5Clone.position.y = 170;
     
     var chair6= chair.clone();
     chair6.position.set(461, 40, 23);
-        scene.add( chair1, chair2, chair3, chair4, chair5, chair6);
+    chair6Clone = chair6.clone();
+    chair6Clone.position.y = 170;
+
+    scene.add( chair1, chair2, chair3, chair4, chair5, chair6);
 
     //////////////
     // lighting
@@ -612,15 +657,198 @@ function init() {
 
     scene.add(track1, track2, track3, track4, track5, track6, track7, track8, track9, track10);
 
+    ///////
+    //gate
+    gate1 = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial());
+    gate1.position.set(400, 170, -160);
+    gate2 = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial());
+    gate2.position.set(262, 170, -403);
+    gate3 = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial());
+    gate3.position.set(-10, 170, -400);
+    gate4 = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial());
+    gate4.position.set(-10, 170, -305);
+    gate5 = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial());
+    gate5.position.set(-75, 170, -106);
+    gate6 = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial());
+    gate6.position.set(-380, 170, -61);
+    stopL = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshBasicMaterial());
+    stopL.position.set(125, 170, -167);
+}
+
+function clamp(v, lo, hi) {
+   if (v < lo) return lo;
+   if (v > hi) return hi;
+   return v;
+}
+
+function lookT(){
+    if(targetP === 1) eyeCamera.lookAt(125, 170, -738);
+    else if(targetP === 2) eyeCamera.lookAt(-43, 170, -633);
+    else if(targetP === 3) eyeCamera.lookAt(292, 170, -635);
+    else if(targetP === 4) eyeCamera.lookAt(-212, 170, -543);
+    else if(targetP === 5) eyeCamera.lookAt(-380, 170, -440);
+    else if(targetP === 6) eyeCamera.lookAt(-212, 170, -169);
+    else if(targetP === 7) eyeCamera.lookAt(-380, 170, -269);
+    else if(targetP === 8) eyeCamera.lookAt(461, 170, -539);
+    else if(targetP === 9) eyeCamera.lookAt(630, 170, -441);
+    else if(targetP === 10) eyeCamera.lookAt(630, 170, -270);
+    else if(targetP === 11) eyeCamera.lookAt(-549, 170, -342);
+    else if(targetP === 12) eyeCamera.lookAt(-717, 170, -244);
+    else if(targetP === 13) eyeCamera.lookAt(-717, 170, -71);
+    else if(targetP === 14) eyeCamera.lookAt(-549, 170, 26);
+    else if(targetP === 15) eyeCamera.lookAt(-380, 170, 123);
+    else if(targetP === 16) eyeCamera.lookAt(-212, 170, 221);
+    else if(targetP === 17) eyeCamera.lookAt(-42.5, 170, 123);
+    else if(targetP === 18) eyeCamera.lookAt(-380, 170, -245);
+    else if(targetP === 19) eyeCamera.lookAt(-212, 170, -146);
+    else if(targetP === 20) eyeCamera.lookAt(630, 170, 120);
+    else if(targetP === 21) eyeCamera.lookAt(630, 170, -51);
+    else if(targetP === 22) eyeCamera.lookAt(461, 170, 219);
+    else if(targetP === 23) eyeCamera.lookAt(294.3, 170, 120);
+    else if(targetP === 24) eyeCamera.lookAt(294.3, 170, -48);
+}
+
+function setT(){
+    if(strategy > current){
+        if(current === 1){
+            targetL = gate1;
+            console.log("gate1");
+        }else if(current === 2){
+            targetL = gate2;
+            console.log("gate2");
+        }else if(current === 3){
+            targetL = gate3;
+            console.log("gate3");
+        }else if(current === 4){
+            if(did === 1) targetL = gate4;
+            else if(did === 2) targetL = stopL;
+            else targetL = gate5;
+            //console.log("gate4,  did = " + did + ", current = " + current, ", alpha = " + alpha);
+        }else if(current === 5){
+            targetL = gate6;
+            //console.log("gate6");
+        }
+        if(alpha >= 0.02){
+            console.log("loop,  did = " + did + ", current = " + current);
+            if(current === 4 && did < 3){
+                console.log("did++");
+                did += 1;
+            }else{
+                if(!equal)
+                    current++;
+                if(did === 3) did = 1;
+            }
+            change = false;
+            alpha = 0;
+        }
+    }else if(strategy < current){
+        if(current === 6){
+            targetL = gate6;
+        }else if(current === 2){
+            targetL = gate1;
+        }else if(current === 3){
+            targetL = gate2;
+        }else if(current === 4){
+            targetL = gate3;
+        }else if(current === 5){
+            if(did === 1) targetL = gate5;
+            else if(did === 2) targetL = stopL;
+            else targetL = gate4;
+        }
+        if(alpha >= 0.02){
+            if(current === 5 && did < 3){
+                did++;
+            }else{
+                if(!equal)
+                    current--;
+                if(did === 3) did = 1;
+            }
+            change = false;
+            alpha = 0;
+        }
+    }else{
+        change = false;
+        if(current === 1) targetL = chair6Clone;
+        else if(current === 2) targetL = chair5Clone;
+        else if(current === 3) targetL = chair1Clone;
+        else if(current === 4) targetL = chair2Clone;
+        else if(current === 5) targetL = chair3Clone;
+        else if(current === 6){
+            targetL = chair4Clone;
+        }
+        if(alpha >= 0.02) alpha = 0;
+    }
+}
+
+function lookW(){
+    console.log("strategy = " + strategy + ", current = " + current);
+    if(strategy > current){
+        if(current === 1){
+            eyeCamera.lookAt(400, 170, -160);
+        }else if(current === 2){
+            eyeCamera.lookAt(262, 170, -403);
+        }else if(current === 3){
+            eyeCamera.lookAt(-10, 170, -400);
+        }else if(current === 4){
+            if(did === 1) eyeCamera.lookAt(-10, 170, -305);
+            else if(did === 2) eyeCamera.lookAt(-75, 170, -106);
+            else eyeCamera.lookAt(-75, 170, -106);
+        }else if(current === 5){
+            eyeCamera.lookAt(-380, 170, -61);
+        }
+    }else if(strategy < current){
+        if(current === 6){
+            eyeCamera.lookAt(-380, 170, -61);
+        }else if(current === 2){
+            eyeCamera.lookAt(400, 170, -160);
+            //console.log("back");
+        }else if(current === 3){
+            eyeCamera.lookAt(262, 170, -403);
+        }else if(current === 4){
+            eyeCamera.lookAt(-10, 170, -400);
+        }else if(current === 5){
+            if(did === 1) eyeCamera.lookAt(-75, 170, -106);
+            else if(did === 2) eyeCamera.lookAt(-10, 170, -305);
+            else eyeCamera.lookAt(-10, 170, -305);
+        }
+    }
+     
 }
 
 function animate() {
-
+    if(!change)
+        var eyeCameraClone = eyeCamera.clone();
     requestAnimationFrame(animate);
-    if(!use3rd)
+    if(!use3rd){
         renderer.render(scene, camera);
-    else
-        renderer.render(scene, eyeCamera);
+        
+    }else{
+        if(strategy != current){
+            equal = false;
+            alpha += 0.00005;
+            //console.log(alpha);
+            alpha = clamp (alpha, 0, 1);
+            setT();
+            lookW();
+            //console.log(targetL);
+            //requestAnimationFrame(animate);
+            renderer.render(scene, eyeCamera);
+            eyeCamera.position.lerpVectors (eyeCameraClone.position, targetL.position, alpha);
+            eyeCamera.quaternion.slerpQuaternions (eyeCameraClone.quaternion, targetL.quaternion, alpha);
+        }else{
+            equal = true;
+            alpha += 0.00005;
+            alpha = clamp (alpha, 0, 1);
+            setT();
+            //console.log(targetL);
+            //requestAnimationFrame(animate);
+            renderer.render(scene, eyeCamera);
+            eyeCamera.position.lerpVectors (eyeCameraClone.position, targetL.position, alpha);
+            eyeCamera.quaternion.slerpQuaternions (eyeCameraClone.quaternion, targetL.quaternion, alpha);
+            lookT();
+        }
+        
+    }
     //spotLightHelper.update();
 
 }
