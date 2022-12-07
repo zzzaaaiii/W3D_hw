@@ -118,7 +118,7 @@
 
                     var c = unitize(object, targetSize);
                     c.name = 'OBJ';
-                    c.position.y = 7.4;
+                    c.position.y = 10;
 
                     chair = new THREE.Object3D();
                     chair.add(c);
@@ -266,6 +266,7 @@
             plane.rotation.x = -Math.PI / 2;
             plane.material.visible = true; // invisible, for picking only
             scene.add(plane);
+            readChairModel('chair');
 
             window.addEventListener('resize', onWindowResize, false);
             $('#container').on("pointerdown", onMouseDown);
@@ -285,8 +286,8 @@
 
         function buildChair() {
             readChairModel('chair');
-            //chair = new THREE.Object3D();
-            chair.position.y = 10;
+            chair = new THREE.Object3D();
+            //chair.position.y = 10;
             return chair;
         }
 
@@ -304,28 +305,30 @@
             mouse.y = -((event.clientY - viewportPos.top) / $('#container').innerHeight()) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
-            if (pc === true) {
+            /*if (pc === true) {
                 puckchair = buildChair();
                 chaircount++;
             } else if (pt === true) {
                 pucktable = buildTable();
                 tablecount++;
-            }
+            }*/
 
             if (placing === true) { // place
                 var intersects = raycaster.intersectObject(plane);
                 if (intersects.length > 0) {
                     if (pt === true && tn === 0) {
                         var newPuck = pucktable.clone(); //makePuck();
-                        newPuck.position.copy(intersects[0].point);
-                        newPuck.position.y = 20;
+                        newPuck.unitize.position.copy(intersects[0].point);
+                        newPuck.unitize.position.y = 20;
                         scene.add(newPuck);
                         puckts.push(newPuck);
                         pucks.push(newPuck);
                         tn++;
                     } else if (pc === true) {
-                        var newPuck = puckchair; //makePuck();
+                        chair = new THREE.Object3D();
+                        var newPuck = chair; //makePuck();
                         newPuck.position.copy(intersects[0].point);
+                        //console.log(intersects[0].point);
                         newPuck.position.y = 10;
                         scene.add(newPuck);
                         puckcs.push(newPuck);
