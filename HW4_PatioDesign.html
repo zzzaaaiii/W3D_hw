@@ -24,7 +24,7 @@
 
 <body>
     <h1 style="font-size:2em; text-align:center; margin:15px">
-        Place, Delete
+        PatioDesign
     </h1>
 
     <hr>
@@ -34,11 +34,12 @@
     <div style="width:30vw; float:left; margin:10px;background-color:Plum">
         <input type=radio class='forni' id='tabling' name='c' value='table' checked> table <br> <br>
         <input type=radio class='forni' id='chairing' name='c' value='chair'> chair<br>
-        <p id='debugMsg'>
-        </p>
     </div>
+    <br><br><br><br><br>
     <button id='save'>Save</button>
+    <br>
     <button id='clear'>Clear</button>
+    <br>
     <button id='restore'>Restore</button>
     <div style="width:30vw;float:left; margin:10px;background-color:yellow">
         <input type=radio class='mode' id='placing' name='g' value='place' checked> Place <br>
@@ -133,7 +134,7 @@
                     var newPuck = puckchair.clone();
                     parseLog[i].y = 10;
                 } else if (parseLog[i].name === 'table') {
-                    console.log(parseLog[i].name);
+                    //console.log(parseLog[i].name);
                     var newPuck = pucktable.clone();
                     parseLog[i].y = 0;
                 }
@@ -171,7 +172,9 @@
             controls = new OrbitControls(camera, renderer.domElement);
 
             var gridXZ = new THREE.GridHelper(200, 20, 'red', 'white');
-            scene.add(gridXZ);
+            //scene.add(gridXZ);
+
+            
 
             let loader = new THREE.TextureLoader();
             loader.crossOrigin = '';
@@ -182,6 +185,9 @@
             plane.rotation.x = -Math.PI / 2;
             scene.add(plane);
             // readChairModel('chair');
+
+            puckchair = buildChair();
+            pucktable = buildTable();
 
             window.addEventListener('resize', onWindowResize, false);
             $('#container').on("pointerdown", onMouseDown);
