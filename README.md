@@ -9,3 +9,7 @@
  ●✅ [HTML Input & Vector3 API](https://zzzaaaiii.github.io/W3D_hw/HW2_form.html)
  
  ●✅ [Gallery floor plan](https://zzzaaaiii.github.io/W3D_hw/HW3_galleryFloorPlan.html)
+ 
+ ●✅ [Patio Design](https://zzzaaaiii.github.io/W3D_hw/HW4_PatioDesign.html)
+ 
+ ●✅ Circle-Rect
