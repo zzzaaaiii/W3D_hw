@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #info {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            color: #ffff00
+        }
+
+        body {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align:center"> Homework 5 </h1>
+    <hr>
+    <div id="container" style="float:left; margin:3px; width:60vw; height:60vw">
+    </div>
+
+    <div style="float:left; margin-left: 10px; width:32vw;">
+        <br>
+        <div >
+            Radius
+            <input type=range min=10 max=25 id='radius' value="20">
+            <p id='debugMsg'>
+            </p>
+        </div>
+        <button id='action'>Pause/Start</button>
+      
+    </div>
+
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://threejs.org/build/three.min.js"></script>
+        <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+        <script>
+            var camera, scene, renderer;
+            var circle, cube, plane, pos, geo, vel, cx, cy, R = 20, minx, miny, maxx, maxy;
+            var mouse = new THREE.Vector2(), Ccur = [],min = [],max = [];
+            var raycaster = new THREE.Raycaster();
+            var controls, move = false, act = true;
+            init();
+            animate();
+
+            $('#action').click(function () {
+            act = !act;
+        });
+
+            function getPos() {
+
+                // Call api 
+                // Need to be replaced by a public ip address
+                $.get("http://127.0.0.1:1338/api?cx=" + cx + "&cy=" + cy + "&R=" + R + "&minx=" + minx + "&miny=" + miny + "&maxx=" + maxx + "&maxy=" + maxy, function (data) {
+                    //console.log("data = " + data);
+                    //console.log("output = " + data.output);
+                    if (data && data.output) {
+                        var coords = data.output.split(" ");
+                        var t = coords[0];
+                        //console.log(coords[0]);
+                        if (t == 1) {
+                            circle.material.color.set('cyan');
+                            $('#debugMsg').text('Collision');
+                        }else{
+                            $('#debugMsg').text('No Collision');
+                            circle.material.color.set('yellow');
+                        }
+                        //if(coords[0] === "0") circle.material.color.set('yellow');
+                        //disc.position.set(10 * coords[0], 10 * coords[1], 0.0);
+                        //console.log (theta + ": " + coords[0] + ", " + coords[1]);
+                    }
+                });
+            }
+
+            function init() {
+
+                renderer = new THREE.WebGLRenderer({
+                    antialias: true
+                });
+                var ww = $('#container').innerWidth();
+                var hh = $('#container').innerHeight();
+                renderer.setSize(ww, hh);
+                renderer.setClearColor(0x555555);
+                $('#container').append(renderer.domElement);
+
+                scene = new THREE.Scene();
+
+                camera = new THREE.PerspectiveCamera(45, ww / hh, 1, 10000);
+                camera.position.set(0, 0, 200)
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+                ////////////////////////////////////////////////////////
+
+                //controls = new THREE.OrbitControls(camera, renderer.domElement);
+                let geometry = new THREE.BufferGeometry();
+                let points = [];
+                points.push(
+                    new THREE.Vector3(-80, -80, 0),
+                    new THREE.Vector3(80, -80, 0),
+                    new THREE.Vector3(80, 80, 0),
+                    new THREE.Vector3(-80, 80, 0),
+                    new THREE.Vector3(-80, -80, 0));
+                geometry.setFromPoints(points);
+                var border = new THREE.Line(geometry, new THREE.LineBasicMaterial({
+                    color: 'blue'
+                }));
+                scene.add(border);
+                plane = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({
+                    color: 'white'
+                }));
+                plane.position.z = -1;
+                circle = new THREE.Mesh(new THREE.CircleGeometry(20, 20, 20), new THREE.MeshBasicMaterial({
+                    color: 'yellow'
+                }));
+                cx = 0;
+                cy = 0;
+
+                cube = new THREE.Mesh(new THREE.BoxGeometry(40, 20, 20), new THREE.MeshBasicMaterial({
+                    color: 'blue'
+                }));
+                scene.add(cube);
+                minx = -20;
+                miny = -10;
+                maxx = 20;
+                maxy = 10;
+
+                scene.add(circle, plane, cube);
+                pos = new THREE.Vector3();
+                vel = new THREE.Vector3(10, 20);
+
+                $('#container').on("pointerdown", onMouseDown);
+                $('#container').on("pointermove", onMouseMove);
+                $('#container').on("pointerup", onMouseUp);
+                window.addEventListener('resize', onWindowResize, false);
+            }
+
+            function onWindowResize() {
+                var ww = $('#container').innerWidth();
+                var hh = $('#container').innerHeight();
+                camera.aspect = ww / hh;
+                camera.updateProjectionMatrix();
+                renderer.setSize(ww, hh);
+            }
+            function onMouseDown(event) {
+
+                var viewportPos = $('#container').get(0).getBoundingClientRect();
+                mouse.x = ((event.clientX - viewportPos.left) / $('#container').innerWidth()) * 2 - 1;
+                mouse.y = -((event.clientY - viewportPos.top) / $('#container').innerHeight()) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+
+                var intersects = raycaster.intersectObject(cube);
+                if (intersects.length > 0) {
+                    cube = intersects[0].object;
+                    move = true;
+                }
+
+            }
+
+
+            function onMouseUp(event) {
+                move = false;
+            }
+
+            function onMouseMove(event) {
+                event.preventDefault();
+
+                var viewportPos = $('#container').get(0).getBoundingClientRect();
+                mouse.x = ((event.clientX - viewportPos.left) / $('#container').innerWidth()) * 2 - 1;
+                mouse.y = -((event.clientY - viewportPos.top) / $('#container').innerHeight()) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                var intersects = raycaster.intersectObject(plane);
+                if (intersects.length > 0 && move) {
+                    cube.position.copy(intersects[0].point);
+                    minx = cube.position.x - 20;
+                    miny = cube.position.y - 10;
+                    maxx = cube.position.x + 20;
+                    maxy = cube.position.y + 10;
+                }
+
+            }
+
+            function animate() {
+
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+
+                $('#radius').change(function () {
+                    R = $(this).val();
+                    circle.removeFromParent();
+
+                    geo = new THREE.CircleGeometry(R, 20, 20);
+                    circle = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color:'black'}));
+                    circle.position.copy(pos);
+                    scene.add(circle);
+
+                })
+                if(act){
+                var dt = 0.05;
+                pos.add(vel.clone().multiplyScalar(dt));
+                if (pos.x > 80 - R  || pos.x < -(80 - R ))
+                    vel.x *= -1;
+                if (pos.y > 80 - R  || pos.y < -(80 - R ))
+                    vel.y *= -1;
+                }
+                /*
+                if (pos.x > 0)
+                    //circle.material.color.set('cyan');
+                else
+                    //circle.material.color.set('yellow');
+*/
+                circle.position.copy(pos);
+                cx = pos.x;
+                cy = pos.y;
+                getPos();
+            }
+
+        </script>
+</body>
+
+</html>
